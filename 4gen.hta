@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>4gen v1.0.0</title>
+    <HTA:APPLICATION
+        ID="4gen"
+        APPLICATIONNAME="4gen"
+        BORDER="none"
+        CAPTION="no"
+        INNERBORDER="no"
+        NAVIGABLE="no"
+        SHOWINTASKBAR="yes"
+        SINGLEINSTANCE="yes"
+        WINDOWSTATE="minimize"
+        SCROLL="no"
+    />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-16"/>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            font-family: sans-serif;
+            font-size: 11px;
+            padding: 10px;
+            border: 2px solid #f9d8ff;
+            margin: 0;
+        }
+        
+        hr {
+            border: 0;
+            height: 1px;
+            background: #444444;
+        }
+
+        #titlebox {
+            background: #333333;
+            margin: 0 0 8px 0;
+            padding: 6px 8px;
+            border: 1px solid #555555;
+            height: 16px;
+            position: relative;
+            cursor: move;
+        }
+
+        h2 {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin: 0;
+            float: left;
+            line-height: 16px;
+        }
+        
+        .close-btn {
+            width: 16px;
+            height: 16px;
+            position: relative;
+            float: right;
+            background: #666666;
+            border: 1px outset #999999;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-anchor: middle;
+            text-orientation: middle;
+        }
+        
+        .close-btn:hover {
+            background: #777777;
+        }
+        
+        .close-btn:active {
+            border: 1px inset #999999;
+            background: #555555;
+        }
+
+        fieldset {
+            border: 2px groove #666666;
+            background: #2a2a2a;
+            padding: 6px 8px;
+            margin: 12px 0 0 0;
+            position: relative;
+            box-sizing: border-box;
+            padding-top: 16px;
+        }
+        
+        legend {
+            background: #2a2a2a;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 2px 6px;
+            border: 1px solid #555555;
+            font-size: 10px;
+            position: absolute;
+            top: -7px;
+            left: 8px;
+            margin-left: 0;
+            margin-right: 0;
+            margin-top: 0;
+        }
+        
+        label {
+            display: inline-block;
+            margin-right: 0.5em;
+            color: #cccccc;
+        }
+        
+        input {
+            background: #fff;
+            border: 2px inset #999999;
+            color: #000000;
+            font-family: monospace;
+            font-size: 10px;
+            padding: 1px;
+            margin-right: 0.5em;
+            box-sizing: border-box;
+        }
+        
+        /* keep custom char box from breaking */
+        #custom {
+            width: 95%;
+        }
+        
+        textarea {
+            background: #ffffff;
+            border: 2px inset #999999;
+            color: #000000;
+            font-family: monospace;
+            font-size: 11px;
+            padding: 3px;
+            resize: none;
+            overflow: hidden;
+            box-sizing: border-box;
+            word-break: break-all;
+            width: 97.5%;
+        }
+        
+        button {
+            background: #dddddd;
+            border: 2px outset #cccccc;
+            color: #000000;
+            font-family: sans-serif;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 6px;
+            margin: 1px 2px;
+            cursor: pointer;
+            min-width: 60px;
+        }
+        
+        button:hover {
+            background: #eeeeee;
+        }
+        
+        button:active {
+            border: 2px inset #cccccc;
+            background: #cccccc;
+        }
+        
+        #strengthBar {
+            width: 100%;
+            height: 10px;
+            background: #333333;
+            border: 1px inset #666666;
+            margin-top: 4px;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        
+        #strengthFill {
+            height: 100%;
+            width: 0%;
+            background: #660000;
+            box-sizing: border-box;
+        }
+        
+        .lengthContainer {
+            background: #2a2a2a;
+            border: 1px solid #555555;
+            padding: 6px;
+            margin: 6px 0;
+        }
+        
+        .checkbox-row {
+            margin: 2px 0;
+        }
+        
+        .button-row {
+            background: #2a2a2a;
+            border: 1px solid #555555;
+            padding: 4px;
+            margin: 6px 0;
+            text-align: center;
+        }
+        
+        .output-section {
+            background: #2a2a2a;
+            border: 1px solid #555555;
+            padding: 6px;
+            margin: 6px 0;
+        }
+        
+        .config-section {
+            background: #2a2a2a;
+            border: 1px solid #555555;
+            padding: 6px;
+            margin: 24px 0;
+        }
+        
+        select {
+            background: #ffffff;
+            border: 2px inset #999999;
+            color: #000000;
+            font-family: sans-serif;
+            font-size: 10px;
+            padding: 2px;
+            margin-right: 4px;
+            width: 120px;
+        }
+        
+        select option {
+            color: #000000;
+            display: block;
+        }
+        
+        .config-controls {
+            margin-top: 4px;
+        }
+        
+        .small-btn {
+            min-width: 40px;
+            font-size: 9px;
+            padding: 2px 4px;
+        }
+
+        .entropy-display {
+            color: #ffcc00;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .preset-buttons {
+            margin: 8px 0;
+            text-align: center;
+        }
+
+        .preset-btn {
+            min-width: 30px;
+            font-size: 9px;
+            padding: 2px 4px;
+            margin: 1px;
+        }
+        
+        .exclude-section {
+            margin-top: 8px;
+        }
+        
+        .exclude-section input {
+            width: 95%;
+            margin-top: 2px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        // Math.log2 polyfill
+        if (!Math.log2) {
+            Math.log2 = function(x) {
+                return Math.log(x) / Math.LN2;
+            };
+        }
+
+        function generatePastelColor() {
+            var hue = Math.floor(Math.random() * 360);
+            var saturation = 40 + Math.floor(Math.random() * 30); // 40-70%
+            var lightness = 75 + Math.floor(Math.random() * 15); // 75-90%
+            return 'hsl(' + hue + ', ' + saturation + '%, ' + lightness + '%)';
+        }
+
+        function setPastelBorder() {
+            try {
+                // random pastel rgb
+                var hue = Math.floor(Math.random() * 360);
+                var r, g, b;
+                
+                // hsl -> rgb
+                var h = hue / 360;
+                var s = 0.7;
+                var l = 0.8;
+                
+                if (s === 0) {
+                    r = g = b = l;
+                } else {
+                    var hue2rgb = function(p, q, t) {
+                        if (t < 0) t += 1;
+                        if (t > 1) t -= 1;
+                        if (t < 1/6) return p + (q - p) * 6 * t;
+                        if (t < 1/2) return q;
+                        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                        return p;
+                    };
+                    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                    var p = 2 * l - q;
+                    r = hue2rgb(p, q, h + 1/3);
+                    g = hue2rgb(p, q, h);
+                    b = hue2rgb(p, q, h - 1/3);
+                }
+                
+                r = Math.round(r * 255);
+                g = Math.round(g * 255);
+                b = Math.round(b * 255);
+                
+                var color = 'rgb(' + r + ',' + g + ',' + b + ')';
+                document.body.style.borderColor = color;
+            } catch(e) {
+                // final fallback to fixedcolor
+                try {
+                    document.body.style.borderColor = '#ffb3ba';
+                } catch(e2) {}
+            }
+        }
+
+        function display() {
+            // content load delay
+            setTimeout(function() {
+                document.documentElement.style.display = 'none';
+                document.documentElement.style.opacity = 0;
+                resizeWindow();
+                setTimeout(function() {
+                    document.documentElement.style.display = 'block';
+                    document.documentElement.style.opacity = 1;
+                }, 100);
+            }, 100);
+        }
+
+        function resizeWindow() {
+            try {
+                // actual content height
+                var body = document.body;
+                var contentHeight = body.scrollHeight;
+                
+                // padding for border
+                var windowHeight = contentHeight + 4;
+                var windowWidth = 350;
+                
+                window.focus();
+                window.resizeTo(windowWidth, windowHeight);
+                window.moveTo(5, screen.availHeight - windowHeight - 5);
+            } catch(e) {
+                // fallback
+                var contentHeight = document.documentElement.offsetHeight;
+                var windowHeight = contentHeight + 50;
+                var windowWidth = 400;
+                
+                window.focus();
+                window.resizeTo(windowWidth, windowHeight);
+                window.moveTo(5, screen.availHeight - windowHeight - 5);
+            }
+        }
+
+        display();
+
+        // sets
+        var charLower = "abcdefghijklmnopqrstuvwxyz";
+        var charUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var charDigits = "0123456789";
+        var charAscii = "";
+        var charUnicode = "";
+        var configPath = "";
+        var configsPath = "";
+        var currentConfig = "default";
+
+        // build ascii specials
+        for (var i = 33; i <= 126; i++) {
+            var char = String.fromCharCode(i);
+            // skip letters/digits
+            if ((i >= 48 && i <= 57) || // 0-9
+                (i >= 65 && i <= 90) || // A-Z
+                (i >= 97 && i <= 122)) { // a-z
+                continue;
+            }
+            charAscii += char;
+        }
+
+        // build unicode specials (bmp only - 0000 to FFFF)
+        var unicodeRanges = [[0x80, 0xA0], [0xA0, 0xAC], [0xAE, 0x377], [0x37A, 0x37F], [0x384, 0x38A], [0x38C, 0x38C], [0x38E, 0x3A1], [0x3A3, 0x52F], [0x531, 0x556], [0x559, 0x58A], [0x58D, 0x58F], [0x591, 0x5C7], [0x5D0, 0x5EA], [0x5EF, 0x5F4], [0x606, 0x61B], [0x61D, 0x6DC], [0x6DE, 0x70D], [0x710, 0x74A], [0x74D, 0x7B1], [0x7C0, 0x7FA], [0x7FD, 0x82D], [0x830, 0x83E], [0x840, 0x85B], [0x85E, 0x85E], [0x860, 0x86A], [0x870, 0x88E], [0x898, 0x8E1], [0x8E3, 0x983], [0x985, 0x98C], [0x98F, 0x990], [0x993, 0x9A8], [0x9AA, 0x9B0], [0x9B2, 0x9B2], [0x9B6, 0x9B9], [0x9BC, 0x9C4], [0x9C7, 0x9C8], [0x9CB, 0x9CE], [0x9D7, 0x9D7], [0x9DC, 0x9DD], [0x9DF, 0x9E3], [0x9E6, 0x9FE], [0xA01, 0xA03], [0xA05, 0xA0A], [0xA0F, 0xA10], [0xA13, 0xA28], [0xA2A, 0xA30], [0xA32, 0xA33], [0xA35, 0xA36], [0xA38, 0xA39], [0xA3C, 0xA3C], [0xA3E, 0xA42], [0xA47, 0xA48], [0xA4B, 0xA4D], [0xA51, 0xA51], [0xA59, 0xA5C], [0xA5E, 0xA5E], [0xA66, 0xA76], [0xA81, 0xA83], [0xA85, 0xA8D], [0xA8F, 0xA91], [0xA93, 0xAA8], [0xAAA, 0xAB0], [0xAB2, 0xAB3], [0xAB5, 0xAB9], [0xABC, 0xAC5], [0xAC7, 0xAC9], [0xACB, 0xACD], [0xAD0, 0xAD0], [0xAE0, 0xAE3], [0xAE6, 0xAF1], [0xAF9, 0xAFF], [0xB01, 0xB03], [0xB05, 0xB0C], [0xB0F, 0xB10], [0xB13, 0xB28], [0xB2A, 0xB30], [0xB32, 0xB33], [0xB35, 0xB39], [0xB3C, 0xB44], [0xB47, 0xB48], [0xB4B, 0xB4D], [0xB55, 0xB57], [0xB5C, 0xB5D], [0xB5F, 0xB63], [0xB66, 0xB77], [0xB82, 0xB83], [0xB85, 0xB8A], [0xB8E, 0xB90], [0xB92, 0xB95], [0xB99, 0xB9A], [0xB9C, 0xB9C], [0xB9E, 0xB9F], [0xBA3, 0xBA4], [0xBA8, 0xBAA], [0xBAE, 0xBB9], [0xBBE, 0xBC2], [0xBC6, 0xBC8], [0xBCA, 0xBCD], [0xBD0, 0xBD0], [0xBD7, 0xBD7], [0xBE6, 0xBFA], [0xC00, 0xC0C], [0xC0E, 0xC10], [0xC12, 0xC28], [0xC2A, 0xC39], [0xC3C, 0xC44], [0xC46, 0xC48], [0xC4A, 0xC4D], [0xC55, 0xC56], [0xC58, 0xC5A], [0xC5D, 0xC5D], [0xC60, 0xC63], [0xC66, 0xC6F], [0xC77, 0xC8C], [0xC8E, 0xC90], [0xC92, 0xCA8], [0xCAA, 0xCB3], [0xCB5, 0xCB9], [0xCBC, 0xCC4], [0xCC6, 0xCC8], [0xCCA, 0xCCD], [0xCD5, 0xCD6], [0xCDD, 0xCDE], [0xCE0, 0xCE3], [0xCE6, 0xCEF], [0xCF1, 0xCF3], [0xD00, 0xD0C], [0xD0E, 0xD10], [0xD12, 0xD44], [0xD46, 0xD48], [0xD4A, 0xD4F], [0xD54, 0xD63], [0xD66, 0xD7F], [0xD81, 0xD83], [0xD85, 0xD96], [0xD9A, 0xDB1], [0xDB3, 0xDBB], [0xDBD, 0xDBD], [0xDC0, 0xDC6], [0xDCA, 0xDCA], [0xDCF, 0xDD4], [0xDD6, 0xDD6], [0xDD8, 0xDDF], [0xDE6, 0xDEF], [0xDF2, 0xDF4], [0xE01, 0xE3A], [0xE3F, 0xE5B], [0xE81, 0xE82], [0xE84, 0xE84], [0xE86, 0xE8A], [0xE8C, 0xEA3], [0xEA5, 0xEA5], [0xEA7, 0xEBD], [0xEC0, 0xEC4], [0xEC6, 0xEC6], [0xEC8, 0xECE], [0xED0, 0xED9], [0xEDC, 0xEDF], [0xF00, 0xF47], [0xF49, 0xF6C], [0xF71, 0xF97], [0xF99, 0xFBC], [0xFBE, 0xFCC], [0xFCE, 0xFDA], [0x1000, 0x10C5], [0x10C7, 0x10C7], [0x10CD, 0x10CD], [0x10D0, 0x1248], [0x124A, 0x124D], [0x1250, 0x1256], [0x1258, 0x1258], [0x125A, 0x125D], [0x1260, 0x1288], [0x128A, 0x128D], [0x1290, 0x12B0], [0x12B2, 0x12B5], [0x12B8, 0x12BE], [0x12C0, 0x12C0], [0x12C2, 0x12C5], [0x12C8, 0x12D6], [0x12D8, 0x1310], [0x1312, 0x1315], [0x1318, 0x135A], [0x135D, 0x137C], [0x1380, 0x1399], [0x13A0, 0x13F5], [0x13F8, 0x13FD], [0x1400, 0x169C], [0x16A0, 0x16F8], [0x1700, 0x1715], [0x171F, 0x1736], [0x1740, 0x1753], [0x1760, 0x176C], [0x176E, 0x1770], [0x1772, 0x1773], [0x1780, 0x17DD], [0x17E0, 0x17E9], [0x17F0, 0x17F9], [0x1800, 0x180D], [0x180F, 0x1819], [0x1820, 0x1878], [0x1880, 0x18AA], [0x18B0, 0x18F5], [0x1900, 0x191E], [0x1920, 0x192B], [0x1930, 0x193B], [0x1940, 0x1940], [0x1944, 0x196D], [0x1970, 0x1974], [0x1980, 0x19AB], [0x19B0, 0x19C9], [0x19D0, 0x19DA], [0x19DE, 0x1A1B], [0x1A1E, 0x1A5E], [0x1A60, 0x1A7C], [0x1A7F, 0x1A89], [0x1A90, 0x1A99], [0x1AA0, 0x1AAD], [0x1AB0, 0x1ACE], [0x1B00, 0x1B4C], [0x1B50, 0x1B7E], [0x1B80, 0x1BF3], [0x1BFC, 0x1C37], [0x1C3B, 0x1C49], [0x1C4D, 0x1C88], [0x1C90, 0x1CBA], [0x1CBD, 0x1CC7], [0x1CD0, 0x1CFA], [0x1D00, 0x1F15], [0x1F18, 0x1F1D], [0x1F20, 0x1F45], [0x1F48, 0x1F4D], [0x1F50, 0x1F57], [0x1F59, 0x1F59], [0x1F5B, 0x1F5B], [0x1F5D, 0x1F5D], [0x1F5F, 0x1F7D], [0x1F80, 0x1FB4], [0x1FB6, 0x1FC4], [0x1FC6, 0x1FD3], [0x1FD6, 0x1FDB], [0x1FDD, 0x1FEF], [0x1FF2, 0x1FF4], [0x1FF6, 0x1FFE], [0x2000, 0x200A], [0x2010, 0x2027], [0x202F, 0x205F], [0x2070, 0x2071], [0x2074, 0x208E], [0x2090, 0x209C], [0x20A0, 0x20C0], [0x20D0, 0x20F0], [0x2100, 0x218B], [0x2190, 0x2426], [0x2440, 0x244A], [0x2460, 0x2B73], [0x2B76, 0x2B95], [0x2B97, 0x2CF3], [0x2CF9, 0x2D25], [0x2D27, 0x2D27], [0x2D2D, 0x2D2D], [0x2D30, 0x2D67], [0x2D6F, 0x2D70], [0x2D7F, 0x2D96], [0x2DA0, 0x2DA6], [0x2DA8, 0x2DAE], [0x2DB0, 0x2DB6], [0x2DB8, 0x2DBE], [0x2DC0, 0x2DC6], [0x2DC8, 0x2DCE], [0x2DD0, 0x2DD6], [0x2DD8, 0x2DDE], [0x2DE0, 0x2E5D], [0x2E80, 0x2E99], [0x2E9B, 0x2EF3], [0x2F00, 0x2FD5], [0x2FF0, 0x303F], [0x3041, 0x3096], [0x3099, 0x30FF], [0x3105, 0x312F], [0x3131, 0x318E], [0x3190, 0x31E3], [0x31EF, 0x321E], [0x3220, 0xA48C], [0xA490, 0xA4C6], [0xA4D0, 0xA62B], [0xA640, 0xA6F7], [0xA700, 0xA7CA], [0xA7D0, 0xA7D1], [0xA7D3, 0xA7D3], [0xA7D5, 0xA7D9], [0xA7F2, 0xA82C], [0xA830, 0xA839], [0xA840, 0xA877], [0xA880, 0xA8C5], [0xA8CE, 0xA8D9], [0xA8E0, 0xA953], [0xA95F, 0xA97C], [0xA980, 0xA9CD], [0xA9CF, 0xA9D9], [0xA9DE, 0xA9FE], [0xAA00, 0xAA36], [0xAA40, 0xAA4D], [0xAA50, 0xAA59], [0xAA5C, 0xAAC2], [0xAADB, 0xAAF6], [0xAB01, 0xAB06], [0xAB09, 0xAB0E], [0xAB11, 0xAB16], [0xAB20, 0xAB26], [0xAB28, 0xAB2E], [0xAB30, 0xAB6B], [0xAB70, 0xABED], [0xABF0, 0xABF9], [0xAC00, 0xD7A3], [0xD7B0, 0xD7C6], [0xD7CB, 0xD7FB], [0xF900, 0xFA6D], [0xFA70, 0xFAD9], [0xFB00, 0xFB06], [0xFB13, 0xFB17], [0xFB1D, 0xFB36], [0xFB38, 0xFB3C], [0xFB3E, 0xFB3E], [0xFB40, 0xFB41], [0xFB43, 0xFB44], [0xFB46, 0xFBC2], [0xFBD3, 0xFD8F], [0xFD92, 0xFDC7], [0xFDCF, 0xFDCF], [0xFDF0, 0xFE19], [0xFE20, 0xFE52], [0xFE54, 0xFE66], [0xFE68, 0xFE6B], [0xFE70, 0xFE74], [0xFE76, 0xFEFC]];
+        
+        // unicode char string maker
+        function buildUnicodeCharacters() {
+            try {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                var scriptPath = window.location.pathname.replace(/\//g, "\\");
+                var appDir = fso.GetParentFolderName(scriptPath);
+                var unicodeFile = fso.BuildPath(appDir, "unicode_chars.txt");
+                
+                if (fso.FileExists(unicodeFile)) {
+                    var file = fso.OpenTextFile(unicodeFile, 1, false, -1); // -1 = Unicode
+                    var unicode = file.ReadAll();
+                    file.Close();
+                    var filtered = "";
+                    for (var i = 0; i < unicode.length; i++) {
+                        var charCode = unicode.charCodeAt(i);
+                        if (charCode >= 128) { // Only non-ASCII
+                            filtered += unicode.charAt(i);
+                        }
+                    }
+                    return filtered;
+                }
+            } catch(e) {}
+            
+            // fallback: building from ranges
+            var unicode = "";
+            for (var i = 0; i < unicodeRanges.length; i++) {
+                var start = unicodeRanges[i][0];
+                var end = unicodeRanges[i][1];
+                for (var code = start; code <= end; code++) {
+                    if (code >= 128) { // double check ascii exclusion
+                        unicode += String.fromCharCode(code);
+                    }
+                }
+            }
+            return unicode;
+        }
+
+        var totalUnicodeChars = 0;
+
+        function init() {
+            try {
+                charUnicode = buildUnicodeCharacters();
+                configPath = getConfigPath();
+                configsPath = getConfigsPath();
+                loadConfigList();
+                loadConfig();
+                updateAll();
+            } catch(e) {}
+        }
+
+        function getConfigPath() {
+            try {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                var shell = new ActiveXObject("WScript.Shell");
+                return fso.BuildPath(shell.ExpandEnvironmentStrings("%USERPROFILE%"), "4gen_" + currentConfig + ".cfg");
+            } catch(e) {
+                return null;
+            }
+        }
+
+        function getConfigsPath() {
+            try {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                var shell = new ActiveXObject("WScript.Shell");
+                return fso.BuildPath(shell.ExpandEnvironmentStrings("%USERPROFILE%"), "4gen_configs.cfg");
+            } catch(e) {
+                return null;
+            }
+        }
+
+        var useSecureRandom = false;
+        var entropyPool = [];
+        var entropyWindow = null;
+        
+        // chacha20 impl
+        function chacha20Quarter(a, b, c, d, x) {
+            x[a] = (x[a] + x[b]) >>> 0;
+            x[d] = rotl32(x[d] ^ x[a], 16);
+            x[c] = (x[c] + x[d]) >>> 0;
+            x[b] = rotl32(x[b] ^ x[c], 12);
+            x[a] = (x[a] + x[b]) >>> 0;
+            x[d] = rotl32(x[d] ^ x[a], 8);
+            x[c] = (x[c] + x[d]) >>> 0;
+            x[b] = rotl32(x[b] ^ x[c], 7);
+        }
+        
+        function rotl32(x, n) {
+            return ((x << n) | (x >>> (32 - n))) >>> 0;
+        }
+        
+        function chacha20Block(key, counter, nonce) {
+            var x = new Array(16);
+            var constants = [0x61707865, 0x3320646e, 0x79622d32, 0x6b206574];
+            
+            // init state
+            for (var i = 0; i < 4; i++) x[i] = constants[i];
+            for (var i = 0; i < 8; i++) x[i + 4] = key[i];
+            x[12] = counter;
+            for (var i = 0; i < 3; i++) x[i + 13] = nonce[i];
+            
+            var working = new Array(16);
+            for (var i = 0; i < 16; i++) working[i] = x[i];
+            
+            // 20 rounds (10 double)
+            for (var i = 0; i < 10; i++) {
+                // column
+                chacha20Quarter(0, 4, 8, 12, working);
+                chacha20Quarter(1, 5, 9, 13, working);
+                chacha20Quarter(2, 6, 10, 14, working);
+                chacha20Quarter(3, 7, 11, 15, working);
+                
+                // diag
+                chacha20Quarter(0, 5, 10, 15, working);
+                chacha20Quarter(1, 6, 11, 12, working);
+                chacha20Quarter(2, 7, 8, 13, working);
+                chacha20Quarter(3, 4, 9, 14, working);
+            }
+            
+            // original state
+            for (var i = 0; i < 16; i++) {
+                working[i] = (working[i] + x[i]) >>> 0;
+            }
+            
+            // to bytes
+            var output = new Array(64);
+            for (var i = 0; i < 16; i++) {
+                output[i * 4] = working[i] & 0xff;
+                output[i * 4 + 1] = (working[i] >>> 8) & 0xff;
+                output[i * 4 + 2] = (working[i] >>> 16) & 0xff;
+                output[i * 4 + 3] = (working[i] >>> 24) & 0xff;
+            }
+            
+            return output;
+        }
+        
+        function chacha20Encrypt(key, nonce, data) {
+            var keyWords = new Array(8);
+            var nonceWords = new Array(3);
+            
+            // key -> 32-bit
+            for (var i = 0; i < 8; i++) {
+                keyWords[i] = (key[i * 4] | (key[i * 4 + 1] << 8) | 
+                              (key[i * 4 + 2] << 16) | (key[i * 4 + 3] << 24)) >>> 0;
+            }
+            
+            // nonce -> 32-bit
+            for (var i = 0; i < 3; i++) {
+                nonceWords[i] = (nonce[i * 4] | (nonce[i * 4 + 1] << 8) | 
+                                (nonce[i * 4 + 2] << 16) | (nonce[i * 4 + 3] << 24)) >>> 0;
+            }
+            
+            var output = new Array(data.length);
+            var counter = 0;
+            
+            for (var pos = 0; pos < data.length; pos += 64) {
+                var keystream = chacha20Block(keyWords, counter++, nonceWords);
+                var blockSize = Math.min(64, data.length - pos);
+                
+                for (var i = 0; i < blockSize; i++) {
+                    output[pos + i] = (data[pos + i] ^ keystream[i]) & 0xff;
+                }
+            }
+            
+            return output;
+        }
+
+        function openEntropyWindow() {
+            if (entropyWindow && !entropyWindow.closed) {
+                entropyWindow.focus();
+                return;
+            }
+            
+            try {
+                // entropy maker popup
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                var shell = new ActiveXObject("WScript.Shell");
+                var tempPath = shell.ExpandEnvironmentStrings("%TEMP%");
+                var htaPath = fso.BuildPath(tempPath, "4gen_entropy.hta");
+                
+                var htaContent = 
+                    "<!DOCTYPE html>" +
+                    "<html>" +
+                    "<head>" +
+                        "<title>4gen entropy generation</title>" +
+                        "<HTA:APPLICATION" +
+                            " ID='entropy'" +
+                            " APPLICATIONNAME='4gen entropy generation'" +
+                            " BORDER='thin'" +
+                            " CAPTION='yes'" +
+                            " INNERBORDER='no'" +
+                            " NAVIGABLE='no'" +
+                            " SHOWINTASKBAR='yes'" +
+                            " SINGLEINSTANCE='no'" +
+                            " WINDOWSTATE='normal'" +
+                            " SCROLL='no'" +
+                        "/>" +
+                        "<meta http-equiv='Content-Type' content='text/html; charset=UTF-16'/>" +
+                        "<style>" +
+                            "body {" +
+                                "background: #1a1a1a;" +
+                                "color: #e0e0e0;" +
+                                "font-family: sans-serif;" +
+                                "margin: 0;" +
+                                "padding: 20px;" +
+                                "cursor: crosshair;" +
+                                "user-select: none;" +
+                            "}" +
+                            "#entropyArea {" +
+                                "width: 360px;" +
+                                "height: 200px;" +
+                                "border: 2px solid #666;" +
+                                "background: #2a2a2a;" +
+                                "position: relative;" +
+                                "margin: 10px 0;" +
+                            "}" +
+                            "#progress {" +
+                                "width: 0%;" +
+                                "height: 4px;" +
+                                "background: #00ff00;" +
+                                "transition: width 0.1s;" +
+                            "}" +
+                            ".instructions {" +
+                                "font-size: 12px;" +
+                                "margin-bottom: 10px;" +
+                            "}" +
+                            ".entropy-info {" +
+                                "font-size: 10px;" +
+                                "color: #aaa;" +
+                                "margin-top: 5px;" +
+                            "}" +
+                            "button {" +
+                                "background: #dddddd;" +
+                                "border: 2px outset #cccccc;" +
+                                "color: #000000;" +
+                                "font-family: sans-serif;" +
+                                "font-size: 10px;" +
+                                "font-weight: bold;" +
+                                "padding: 5px 10px;" +
+                                "margin: 5px;" +
+                                "cursor: pointer;" +
+                            "}" +
+                            "button:hover {" +
+                                "background: #eeeeee;" +
+                            "}" +
+                            "button:active {" +
+                                "border: 2px inset #cccccc;" +
+                                "background: #cccccc;" +
+                            "}" +
+                        "</style>" +
+                    "</head>" +
+                    "<body>" +
+                        "<div class='instructions'>move your mouse randomly around the box below to generate entropy:</div>" +
+                        "<div id='entropyArea'></div>" +
+                        "<div id='progress'></div>" +
+                        "<div class='entropy-info'>entropy collected: <span id='entropyCount'>0</span> / 500</div>" +
+                        "<button onclick='finishEntropy()'>generate password</button>" +
+                        "<button onclick='cancelEntropy()'>cancel</button>" +
+                        
+                        "<script type='text/javascript'>" +
+                            "var mouseEntropy = [];" +
+                            "var entropyCount = 0;" +
+                            "var lastTime = 0;" +
+                            "var targetEntropy = 500;" +
+                            "var autoCloseTimer = null;" +
+                            
+                            "function display() {" +
+                                "setTimeout(function() {" +
+                                    "document.documentElement.setAttribute('style', 'display: none; opacity: 0;');" +
+                                    "resizeWindow();" +
+                                    "setTimeout(function() {" +
+                                        "document.documentElement.setAttribute('style', 'display: block; opacity: 1;');" +
+                                    "}, 100);" +
+                                "}, 100);" +
+                            "}" +
+                            
+                            "function resizeWindow() {" +
+                                "try {" +
+                                    "var body = document.body;" +
+                                    "var contentHeight = body.scrollHeight;" +
+                                    "var windowHeight = contentHeight + 50;" +
+                                    "var windowWidth = 420;" +
+                                    
+                                    "window.focus();" +
+                                    "window.resizeTo(windowWidth, windowHeight);" +
+                                    "var x = (screen.width - windowWidth) / 2;" +
+                                    "var y = (screen.height - windowHeight) / 2;" +
+                                    "window.moveTo(x, y);" +
+                                "} catch(e) {" +
+                                    "var contentHeight = document.documentElement.offsetHeight;" +
+                                    "var windowHeight = contentHeight + 50;" +
+                                    "var windowWidth = 420;" +
+                                    
+                                    "window.focus();" +
+                                    "window.resizeTo(windowWidth, windowHeight);" +
+                                    "var x = (screen.width - windowWidth) / 2;" +
+                                    "var y = (screen.height - windowHeight) / 2;" +
+                                    "window.moveTo(x, y);" +
+                                "}" +
+                            "}" +
+                            
+                            "function collectEntropy(e) {" +
+                                "e = e || window.event;" +
+                                "var now = new Date().getTime();" +
+                                "if (now - lastTime < 10) return;" +
+                                "lastTime = now;" +
+                                
+                                "var x = e.screenX || e.x || 0;" +
+                                "var y = e.screenY || e.y || 0;" +
+                                "var timeDelta = now % 1000;" +
+                                
+                                "mouseEntropy.push(x & 0xFF);" +
+                                "mouseEntropy.push(y & 0xFF);" +
+                                "mouseEntropy.push(timeDelta & 0xFF);" +
+                                "mouseEntropy.push((Math.sin(now) * 1000000) & 0xFF);" +
+                                
+                                "entropyCount = Math.min(entropyCount + 4, targetEntropy);" +
+                                
+                                "var progress = (entropyCount / targetEntropy) * 100;" +
+                                "document.getElementById('progress').style.width = progress + '%';" +
+                                "document.getElementById('entropyCount').innerText = entropyCount;" +
+                                
+                                "if (entropyCount >= targetEntropy) {" +
+                                    "document.getElementById('progress').style.background = '#ffff00';" +
+                                    "if (!autoCloseTimer) {" +
+                                        "autoCloseTimer = setTimeout(function() {" +
+                                            "finishEntropy();" +
+                                        "}, 500);" +
+                                    "}" +
+                                "}" +
+                            "}" +
+                            
+                            "window.onload = function() {" +
+                                "display();" +
+                                
+                                "var area = document.getElementById('entropyArea');" +
+                                "if (area.addEventListener) {" +
+                                    "area.addEventListener('mousemove', collectEntropy, false);" +
+                                "} else {" +
+                                    "area.attachEvent('onmousemove', collectEntropy);" +
+                                "}" +
+                            "};" +
+                            
+                            "window.onresize = function() {" +
+                                "setTimeout(resizeWindow, 50);" +
+                            "};" +
+                            
+                            "function sendEntropyToParent(entropy) {" +
+                                "try {" +
+                                    "var fso = new ActiveXObject('Scripting.FileSystemObject');" +
+                                    "var shell = new ActiveXObject('WScript.Shell');" +
+                                    "var tempPath = shell.ExpandEnvironmentStrings('%TEMP%');" +
+                                    "var dataPath = fso.BuildPath(tempPath, '4gen_entropy_data.tmp');" +
+                                    
+                                    "var file = fso.CreateTextFile(dataPath, true);" +
+                                    "file.WriteLine(entropy.join(','));" +
+                                    "file.Close();" +
+                                "} catch(e) {}" +
+                            "}" +
+                            
+                            "function finishEntropy() {" +
+                                "if (entropyCount < 250) {" +
+                                    "alert('please collect more entropy (minimum 250 points)');" +
+                                    "return;" +
+                                "}" +
+                                
+                                "sendEntropyToParent(mouseEntropy);" +
+                                "window.close();" +
+                            "}" +
+                            
+                            "function cancelEntropy() {" +
+                                "if (autoCloseTimer) {" +
+                                    "clearTimeout(autoCloseTimer);" +
+                                "}" +
+                                "window.close();" +
+                            "}" +
+                        "</scr" + "ipt>" +
+                    "</body>" +
+                    "</html>";
+                
+                var file = fso.CreateTextFile(htaPath, true, true);
+                file.Write(htaContent);
+                file.Close();
+                
+                // launch window
+                shell.Run('"' + htaPath + '"', 1, false);
+                
+                // check for data
+                setTimeout(checkForEntropy, 1000);
+                
+            } catch(e) {
+                alert("failed to create entropy window: " + e.message);
+            }
+        }
+        
+        function checkForEntropy() {
+            try {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                var shell = new ActiveXObject("WScript.Shell");
+                var tempPath = shell.ExpandEnvironmentStrings("%TEMP%");
+                var dataPath = fso.BuildPath(tempPath, "4gen_entropy_data.tmp");
+                
+                if (fso.FileExists(dataPath)) {
+                    var file = fso.OpenTextFile(dataPath, 1);
+                    var entropyData = file.ReadAll();
+                    file.Close();
+                    fso.DeleteFile(dataPath);
+                    
+                    // split parse
+                    var entropy = entropyData.split(',');
+                    var numEntropy = [];
+                    for (var i = 0; i < entropy.length; i++) {
+                        var num = parseInt(entropy[i], 10);
+                        if (!isNaN(num)) {
+                            numEntropy.push(num);
+                        }
+                    }
+                    
+                    if (numEntropy && numEntropy.length > 0) {
+                        processEntropy(numEntropy);
+                    }
+                } else {
+                    // check for 30 more seconds
+                    setTimeout(checkForEntropy, 500);
+                }
+            } catch(e) {
+                setTimeout(checkForEntropy, 500);
+            }
+        }
+        
+        function processEntropy(mouseEntropy) {
+            entropyPool = mouseEntropy;
+            genClick(); // gen pass with collected entropy
+        }
+
+        function getRandom(length) {
+            if (!useSecureRandom || entropyPool.length < 100) {
+                // fallback to insecure prnd
+                var meow = new Array();
+                for (var i = 0; i < length; i++) {
+                    meow.push(Math.floor(Math.random() * 256));
+                }
+                return meow;
+            }
+            
+            // chacha20 via pool
+            var key = new Array(32);  // 256-bit key
+            var nonce = new Array(12); // 96-bit nonce
+            var timestamp = new Date().getTime();
+            
+            // create key from pool
+            for (var i = 0; i < 32; i++) {
+                key[i] = (entropyPool[i % entropyPool.length] ^ 
+                         (timestamp >> (i % 32)) ^ 
+                         (Math.sin(timestamp + i) * 1000000)) & 0xFF;
+            }
+            
+            // nonce from pool and timestamp
+            for (var i = 0; i < 12; i++) {
+                var entropyIndex = (i + 32) % entropyPool.length;
+                nonce[i] = (entropyPool[entropyIndex] ^ 
+                           (timestamp >> ((i * 3) % 32)) ^
+                           (Math.cos(timestamp + i) * 1000000)) & 0xFF;
+            }
+            
+            // plaintext data to encrypt (acts as our random source)
+            var plaintext = new Array(length);
+            for (var i = 0; i < length; i++) {
+                var entropyIndex = i % entropyPool.length;
+                plaintext[i] = (entropyPool[entropyIndex] ^ 
+                               (timestamp >> (i % 32)) ^
+                               (i * 257) ^
+                               (Math.sin(timestamp * i) * 1000000)) & 0xFF;
+            }
+            
+            // encrypt to get bytes
+            return chacha20Encrypt(key, nonce, plaintext);
+        }
+
+        function genClick() {
+            if (useSecureRandom && entropyPool.length < 100) {
+                openEntropyWindow();
+                return;
+            }
+            
+            var pw = generate();
+            if (pw) {
+                document.getElementById("out").value = pw;
+                updateStrength();
+                // clear entropy pool after use
+                if (useSecureRandom) {
+                    entropyPool = [];
+                }
+            }
+        }
+
+        function toggleSecureRandom() {
+            useSecureRandom = document.getElementById("secureRandom").checked;
+        }
+
+        function generate() {
+            try {
+                var len = parseInt(document.getElementById("len").value, 10);
+                if (isNaN(len) || len < 1) return "";
+
+                // full charpool
+                var chars = "";
+                if (document.getElementById("c1").checked) chars += charLower;
+                if (document.getElementById("c2").checked) chars += charUpper;
+                if (document.getElementById("c3").checked) chars += charDigits;
+                if (document.getElementById("c4").checked) chars += charAscii;
+                if (document.getElementById("c5").checked) chars += charUnicode;
+                
+                var custom = document.getElementById("custom").value;
+                if (custom) chars += custom;
+
+                if (chars.length === 0) {
+                    alert("select character sets");
+                    return "";
+                }
+
+                // exclude characters
+                var excluded = document.getElementById("exclude").value;
+                if (excluded) {
+                    var cleanChars = "";
+                    for (var i = 0; i < chars.length; i++) {
+                        if (excluded.indexOf(chars.charAt(i)) === -1) {
+                            cleanChars += chars.charAt(i);
+                        }
+                    }
+                    chars = cleanChars;
+                }
+
+                // dedupe
+                var uniqueChars = "";
+                for (var i = 0; i < chars.length; i++) {
+                    var char = chars.charAt(i);
+                    if (uniqueChars.indexOf(char) === -1) {
+                        uniqueChars += char;
+                    }
+                }
+
+                if (uniqueChars.length === 0) {
+                    alert("no characters available after exclusions");
+                    return "";
+                }
+
+                var rnd = getRandom(len);
+                var pw = "";
+                for (var i = 0; i < len; i++) {
+                    pw += uniqueChars.charAt(rnd[i] % uniqueChars.length);
+                }
+                return pw;
+            } catch(e) {
+                return "";
+            }
+        }
+
+        function copyClick() {
+            try {
+                document.getElementById("out").select();
+                window.clipboardData.setData("Text", document.getElementById("out").value);
+                alert("copied");
+            } catch(e) {
+                alert("copy failed");
+            }
+        }
+
+        function saveClick() {
+            var pw = document.getElementById("out").value;
+            if (!pw) {
+                alert("no password to save");
+                return;
+            }
+            
+            try {
+                var dialog = new ActiveXObject("MSComDlg.CommonDialog");
+                dialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+                dialog.FilterIndex = 1;
+                dialog.FileName = "";
+                dialog.DefaultExt = "txt";
+                dialog.DialogTitle = "save password as";
+                dialog.Flags = 0x00000002 | 0x00000004 | 0x00000800; // OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_EXPLORER
+                
+                if (dialog.ShowSave()) {
+                    var fso = new ActiveXObject("Scripting.FileSystemObject");
+                    var file = fso.CreateTextFile(dialog.FileName, true);
+                    file.WriteLine(pw);
+                    file.Close();
+                    alert("password saved to:\n" + dialog.FileName);
+                }
+                
+            } catch(e) {
+                try {
+                    var dialog = new ActiveXObject("UserAccounts.CommonDialog");
+                    dialog.Filter = "Text Files|*.txt|All Files|*.*";
+                    dialog.FilterIndex = 1;
+                    dialog.FileName = ""; // user can enter name
+                    dialog.DialogTitle = "save password as";
+                    dialog.Flags = 0x00000002 | 0x00000004 | 0x00000800;
+                    
+                    // initial directory is Documents
+                    try {
+                        var shell = new ActiveXObject("WScript.Shell");
+                        dialog.InitialDir = shell.SpecialFolders("MyDocuments");
+                    } catch(e2) {}
+                    
+                    if (dialog.ShowSave()) {
+                        var fso = new ActiveXObject("Scripting.FileSystemObject");
+                        var file = fso.CreateTextFile(dialog.FileName, true);
+                        file.WriteLine(pw);
+                        file.Close();
+                        alert("password saved to:\n" + dialog.FileName);
+                    }
+                    
+                } catch(e2) {
+                    try {
+                        var fileName = prompt("enter filename (without extension):", "password");
+                        if (!fileName) return;
+                        
+                        // clean filename
+                        fileName = fileName.replace(/[<>:"/\\|?*]/g, '');
+                        if (fileName.indexOf('.') === -1) {
+                            fileName += '.txt';
+                        }
+                        
+                        var shell = new ActiveXObject("Shell.Application");
+                        var folder = shell.BrowseForFolder(0, "select folder to save " + fileName + ":", 
+                            0x00000001 | 0x00000010 | 0x00000040);
+                        
+                        if (folder) {
+                            var fso = new ActiveXObject("Scripting.FileSystemObject");
+                            var fullPath = fso.BuildPath(folder.Self.Path, fileName);
+                            
+                            if (fso.FileExists(fullPath)) {
+                                if (!confirm("file '" + fileName + "' already exists. overwrite?")) {
+                                    return;
+                                }
+                            }
+                            
+                            var file = fso.CreateTextFile(fullPath, true);
+                            file.WriteLine(pw);
+                            file.Close();
+                            alert("password saved to:\n" + fullPath);
+                        }
+                    } catch(e3) {
+                        alert("save failed: " + e3.message);
+                    }
+                }
+            }
+        }
+
+        // util
+        function arrayIndexOf(arr, item) {
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i] === item) return i;
+            }
+            return -1;
+        }
+
+        function getSecureRandom(length) {
+            // chacha if entropy
+            if (useSecureRandom && entropyPool.length >= 100) {
+                return getRandom(length);
+            }
+            
+            // no entropy? no problem. 
+            var result = new Array(length);
+            var seed = new Date().getTime();
+            for (var i = 0; i < length; i++) {
+                seed = (seed * 9301 + 49297) % 233280;
+                var rnd = seed / 233280;
+                rnd += Math.sin(new Date().getTime() + i) * 10000;
+                rnd += (navigator.userAgent.length + screen.width + screen.height) * i;
+                result[i] = Math.floor((rnd % 1) * 256);
+            }
+            return result;
+        }
+
+        // strength display
+        function updateStrength() {
+            var len = parseInt(document.getElementById("len").value, 10) || 0;
+            
+            var chars = "";
+            if (document.getElementById("c1").checked) {
+                chars += charLower;
+            }
+            if (document.getElementById("c2").checked) {
+                chars += charUpper;
+            }
+            if (document.getElementById("c3").checked) {
+                chars += charDigits;
+            }
+            if (document.getElementById("c4").checked) {
+                chars += charAscii;
+            }
+            if (document.getElementById("c5").checked) {
+                chars += charUnicode;
+            }
+            
+            var custom = document.getElementById("custom").value;
+            if (custom) {
+                chars += custom;
+            }
+
+            // exclude 
+            var excluded = document.getElementById("exclude").value;
+            if (excluded) {
+                var cleanChars = "";
+                for (var i = 0; i < chars.length; i++) {
+                    if (excluded.indexOf(chars.charAt(i)) === -1) {
+                        cleanChars += chars.charAt(i);
+                    }
+                }
+                chars = cleanChars;
+            }
+
+            // dedupe
+            var uniqueChars = "";
+            for (var i = 0; i < chars.length; i++) {
+                var char = chars.charAt(i);
+                if (uniqueChars.indexOf(char) === -1) {
+                    uniqueChars += char;
+                }
+            }
+
+            // entropy calculations
+            var entropy = 0;
+            if (uniqueChars.length > 0 && len > 0) {
+                entropy = len * Math.log2(uniqueChars.length);
+            }
+            var entropyElement = document.getElementById("entropyValue");
+            if (entropyElement) {
+                if (entropyElement.innerText !== undefined) {
+                    entropyElement.innerText = Math.round(entropy * 10) / 10;
+                } else {
+                    entropyElement.innerHTML = Math.round(entropy * 10) / 10;
+                }
+            }
+
+            // bar based on entropy
+            var bar = document.getElementById("strengthFill");
+            var strengthPercent = Math.min(100, entropy / 128 * 100); // 128 bits = 100%
+            bar.style.width = strengthPercent + "%";
+            
+            if (strengthPercent < 25) bar.style.background = "#cc0000";
+            else if (strengthPercent < 50) bar.style.background = "#ff8000";
+            else if (strengthPercent < 75) bar.style.background = "#cccc00";
+            else bar.style.background = "#00cc00";
+        }
+
+        window.onload = function() {
+            setPastelBorder();
+            init();
+            // latch to titlebox
+            var titlebox = document.getElementById("titlebox");
+            if (titlebox.addEventListener) {
+                titlebox.addEventListener("mousedown", startDrag, false);
+                titlebox.addEventListener("mousemove", doDrag, false);
+                titlebox.addEventListener("mouseup", stopDrag, false);
+                titlebox.addEventListener("mouseleave", stopDrag, false);
+            } else {
+                titlebox.attachEvent("onmousedown", startDrag);
+                titlebox.attachEvent("onmousemove", doDrag);
+                titlebox.attachEvent("onmouseup", stopDrag);
+                titlebox.attachEvent("onmouseleave", stopDrag);
+            }
+            
+            // reensure sizing
+            setTimeout(resizeWindow, 200);
+        };
+        window.onresize = function() {
+            setTimeout(resizeWindow, 50);
+        };
+
+        function updateAll() {
+            updateStrength();
+        }
+
+        function setLength(length) {
+            document.getElementById("len").value = length;
+            updateStrength();
+        }
+
+        function closeApp() {
+            try {
+                window.close();
+            } catch(e) {
+                self.close();
+            }
+        }
+
+        function saveConfig() {
+            if (!configPath) return;
+            try {
+                var cfg = "{" +
+                    '"len":"' + document.getElementById("len").value + '",' +
+                    '"c1":' + document.getElementById("c1").checked + ',' +
+                    '"c2":' + document.getElementById("c2").checked + ',' +
+                    '"c3":' + document.getElementById("c3").checked + ',' +
+                    '"c4":' + document.getElementById("c4").checked + ',' +
+                    '"c5":' + document.getElementById("c5").checked + ',' +
+                    '"secureRandom":' + document.getElementById("secureRandom").checked + ',' +
+                    '"custom":"' + document.getElementById("custom").value.replace(/"/g, '\\"') + '",' +
+                    '"exclude":"' + document.getElementById("exclude").value.replace(/"/g, '\\"') + '"' +
+                '}';
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                var file = fso.CreateTextFile(getConfigPath(), true);
+                file.WriteLine(cfg);
+                file.Close();
+                alert("config '" + currentConfig + "' saved");
+            } catch(e) {
+                alert("save failed");
+            }
+        }
+
+        function loadConfig() {
+            var path = getConfigPath();
+            if (!path) return;
+            try {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                if (!fso.FileExists(path)) return;
+                var file = fso.OpenTextFile(path, 1);
+                var cfg = eval('(' + file.ReadAll() + ')');
+                file.Close();
+                
+                document.getElementById("len").value = cfg.len || 16;
+                document.getElementById("c1").checked = cfg.c1 !== false;
+                document.getElementById("c2").checked = cfg.c2 !== false;
+                document.getElementById("c3").checked = cfg.c3 !== false;
+                document.getElementById("c4").checked = cfg.c4 !== false;
+                document.getElementById("c5").checked = cfg.c5 === true;
+                document.getElementById("secureRandom").checked = cfg.secureRandom === true;
+                document.getElementById("custom").value = cfg.custom || "";
+                document.getElementById("exclude").value = cfg.exclude || "";
+                
+                // update checkbox state
+                useSecureRandom = document.getElementById("secureRandom").checked;
+                
+                updateAll();
+            } catch(e) {}
+        }
+
+        function loadConfigList() {
+            try {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                var configs = ["default"];
+                
+                if (fso.FileExists(configsPath)) {
+                    var file = fso.OpenTextFile(configsPath, 1);
+                    var data = eval('(' + file.ReadAll() + ')');
+                    file.Close();
+                    configs = data.configs || ["default"];
+                }
+                
+                var select = document.getElementById("cfgSel");
+                select.innerHTML = "";
+                for (var i = 0; i < configs.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = configs[i];
+                    option.innerHTML = configs[i];
+                    if (configs[i] == currentConfig) option.selected = true;
+                    select.appendChild(option);
+                }
+            } catch(e) {}
+        }
+
+        function saveConfigList(configs) {
+            try {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                var data = '{"configs":["' + configs.join('","') + '"]}';
+                var file = fso.CreateTextFile(configsPath, true);
+                file.WriteLine(data);
+                file.Close();
+            } catch(e) {}
+        }
+
+        function switchConfig() {
+            var select = document.getElementById("cfgSel");
+            currentConfig = select.value;
+            configPath = getConfigPath();
+            loadConfig();
+        }
+
+        function createConfig() {
+            var name = prompt("enter new config name:", "");
+            if (!name || name.replace(/^\s+|\s+$/g, "").replace(/[^a-zA-Z0-9_-]/g, "") == "") return;
+            name = name.replace(/^\s+|\s+$/g, "").replace(/[^a-zA-Z0-9_-]/g, "");
+            if (!name) {
+                alert("invalid name");
+                return;
+            }
+            
+            try {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                var configs = ["default"];
+                
+                if (fso.FileExists(configsPath)) {
+                    var file = fso.OpenTextFile(configsPath, 1);
+                    var data = eval('(' + file.ReadAll() + ')');
+                    file.Close();
+                    configs = data.configs || ["default"];
+                }
+                
+                if (arrayIndexOf(configs, name) >= 0) {
+                    alert("config already exists");
+                    return;
+                }
+                
+                configs.push(name);
+                saveConfigList(configs);
+                currentConfig = name;
+                configPath = getConfigPath();
+                saveConfig();
+                loadConfigList();
+                document.getElementById("cfgSel").value = name;
+            } catch(e) {
+                alert("create failed: " + e.message);
+            }
+        }
+
+        function deleteConfig() {
+            if (currentConfig == "default") {
+                alert("cannot delete default config");
+                return;
+            }
+            
+            if (!confirm("delete config '" + currentConfig + "'?")) return;
+            
+            try {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                var configs = ["default"];
+                
+                if (fso.FileExists(configsPath)) {
+                    var file = fso.OpenTextFile(configsPath, 1);
+                    var data = eval('(' + file.ReadAll() + ')');
+                    file.Close();
+                    configs = data.configs || ["default"];
+                }
+                
+                var idx = arrayIndexOf(configs, currentConfig);
+                if (idx >= 0) configs.splice(idx, 1);
+                
+                var configFile = getConfigPath();
+                if (fso.FileExists(configFile)) {
+                    fso.DeleteFile(configFile);
+                }
+                
+                saveConfigList(configs);
+                currentConfig = "default";
+                configPath = getConfigPath();
+                loadConfigList();
+                loadConfig();
+            } catch(e) {
+                alert("Delete failed");
+            }
+        }
+
+        // dragging
+        var isDragging = false;
+        var dragStartX = 0;
+        var dragStartY = 0;
+        var windowStartX = 0;
+        var windowStartY = 0;
+
+        function startDrag(e) {
+            e = e || window.event;
+            isDragging = true;
+            dragStartX = e.screenX || e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+            dragStartY = e.screenY || e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+            windowStartX = window.screenLeft || window.screenX || 0;
+            windowStartY = window.screenTop || window.screenY || 0;
+            if (document.getElementById("titlebox").setCapture) {
+                document.getElementById("titlebox").setCapture();
+            }
+            if (e.preventDefault) e.preventDefault();
+            return false;
+        }
+
+        function doDrag(e) {
+            if (!isDragging) return;
+            e = e || window.event;
+            var currentX = e.screenX || e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+            var currentY = e.screenY || e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+            var newX = windowStartX + (currentX - dragStartX);
+            var newY = windowStartY + (currentY - dragStartY);
+            window.moveTo(newX, newY);
+            if (e.preventDefault) e.preventDefault();
+            return false;
+        }
+
+        function stopDrag(e) {
+            if (isDragging) {
+                isDragging = false;
+                if (document.getElementById("titlebox").releaseCapture) {
+                    document.getElementById("titlebox").releaseCapture();
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="titlebox">
+        <h2>4gen v1.0.0</h2>
+        <span class="close-btn" onclick="closeApp()" title="close">x</span>
+    </div>
+
+    <fieldset class="config-section">
+        <legend>configs</legend><br>
+        <label for="cfgSel">select:</label>
+        <select id="cfgSel" onchange="switchConfig()">
+            <option value="default">default</option>
+        </select><hr/>
+        <div class="config-controls">
+            <button class="small-btn" onclick="createConfig()">new</button>
+            <button class="small-btn" onclick="deleteConfig()">del</button>
+            <button class="small-btn" onclick="saveConfig()">save</button>
+        </div>
+    </fieldset>
+
+    <fieldset class="config-section">
+        <legend>password config</legend><br>
+        <div class="config-row">
+            <label for="len">length:</label>
+            <input type="number" id="len" min="1" max="512" value="16" onchange="updateStrength()" onkeyup="updateStrength()"/>
+            <span class="entropy-display">entropy: <span id="entropyValue">0</span> bits</span>
+        </div>
+        <div class="preset-buttons">
+            <button class="preset-btn" onclick="setLength(8)">8</button>
+            <button class="preset-btn" onclick="setLength(12)">12</button>
+            <button class="preset-btn" onclick="setLength(16)">16</button>
+            <button class="preset-btn" onclick="setLength(20)">20</button>
+            <button class="preset-btn" onclick="setLength(24)">24</button>
+            <button class="preset-btn" onclick="setLength(32)">32</button>
+            <button class="preset-btn" onclick="setLength(64)">64</button>
+        </div>
+        <div class="checkbox-row"><input type="checkbox" id="secureRandom" onchange="toggleSecureRandom()"/><label>secure random (mouse entropy)</label></div>
+    </fieldset>
+
+    <fieldset>
+        <legend>charsets</legend>
+        <div class="checkbox-row"><input type="checkbox" id="c1" checked onchange="updateStrength()"/><label>lowercase (a-z)</label></div>
+        <div class="checkbox-row"><input type="checkbox" id="c2" checked onchange="updateStrength()"/><label>uppercase (A-Z)</label></div>
+        <div class="checkbox-row"><input type="checkbox" id="c3" checked onchange="updateStrength()"/><label>digits (0-9)</label></div>
+        <div class="checkbox-row"><input type="checkbox" id="c4" checked onchange="updateStrength()"/><label>special (!@#$%...)</label></div>
+        <div class="checkbox-row"><input type="checkbox" id="c5" onchange="updateStrength()"/><label>unicode symbols</label></div><hr/>
+        <div class="custom-section">
+            <label>custom chars:</label><br/>
+            <input type="text" id="custom" oninput="updateStrength()"/>
+        </div>
+        <div class="exclude-section">
+            <label for="exclude">exclude chars:</label><br/>
+            <input type="text" id="exclude" placeholder="e.g. 0O1lI" oninput="updateStrength()"/>
+        </div>
+    </fieldset>
+
+    <div class="button-row">
+        <button onclick="genClick()">generate</button>
+        <button onclick="copyClick()">copy</button>
+        <button onclick="saveClick()">save as</button>
+    </div>
+
+    <div class="output-section">
+        <label>password <span id="strengthText" style="font-weight: bold; margin-left: 8px;"></span></label><br/>
+        <textarea id="out" readonly></textarea>
+        <div id="strengthBar">
+            <div id="strengthFill"></div>
+        </div>
+    </div>
+</body>
+</html>

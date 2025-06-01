@@ -1,0 +1,78 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  release:
+    runs-on: windows-latest
+    
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+      
+    - name: setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: install deps
+      run: npm install
+      
+    - name: get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      shell: bash
+      
+    - name: zip
+      run: |
+        mkdir 4gen-release
+        Copy-Item 4gen.hta 4gen-release\
+        Copy-Item installer.hta 4gen-release\
+        Copy-Item README.md 4gen-release\
+        Copy-Item LICENSE 4gen-release\
+        if (Test-Path unicode_chars.txt) { 
+          Copy-Item unicode_chars.txt 4gen-release\
+        } else {
+          Write-Host "warning: unicode_chars.txt not found"
+        }
+        if (Test-Path assets\) { 
+          Copy-Item assets 4gen-release\assets\ -Recurse 
+        } else {
+          Write-Host "warning: assets folder not found"
+          mkdir 4gen-release\assets
+        }
+        Compress-Archive -Path 4gen-release\* -DestinationPath 4gen-v${{ steps.get_version.outputs.VERSION }}.zip
+      shell: powershell
+      
+    - name: create release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref }}
+        name: 4gen v${{ steps.get_version.outputs.VERSION }}
+        body: |
+          download and install
+          1. download the zip file below
+          2. extract to a folder
+          3. run `installer.hta` to install 4gen
+          
+          or run `4gen.hta` directly without installation.
+          
+          **included files:**
+          - 4gen.hta (main application)
+          - installer.hta (installer)
+          - unicode_chars.txt (unicode character set)
+          - assets/4gen.ico (application icon)
+          - README.md (documentation)
+          - LICENSE (license file)
+        files: 4gen-v${{ steps.get_version.outputs.VERSION }}.zip
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

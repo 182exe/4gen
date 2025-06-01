@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>4gen installer v1.0.0</title>
+    <HTA:APPLICATION
+        ID="4geninstaller"
+        APPLICATIONNAME="4gen installer"
+        BORDER="thick"
+        CAPTION="yes"
+        INNERBORDER="yes"
+        NAVIGABLE="no"
+        SHOWINTASKBAR="yes"
+        SINGLEINSTANCE="yes"
+        WINDOWSTATE="normal"
+    />
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        #status {
+            font-family: monospace;
+            border: inset 1px #ccc;
+            margin: 10px 0;
+            font-size: 11px;
+        }
+        .options, .buttons {
+            margin: 10px 0;
+        }
+        button {
+            margin: auto 5px;
+            background: #f0f0f0
+        }
+    </style>
+</head>
+<body>
+    <h3>install 4gen v1.0.0</h3>
+    <div class="options">
+        <label><input type="checkbox" id="desktopShortcut" checked> create desktop shortcut</label><br>
+        <label><input type="checkbox" id="startMenuShortcut" checked> add to start menu</label>
+    </div>
+    
+    <div class="buttons">
+        <button id="installBtn" onclick="install()">install</button>
+        <button id="cancelBtn" onclick="window.close()">cancel</button>
+    </div>
+    <hr>
+    <div class="status-label">installation log:</div>
+    <div id="status" class="status"></div>
+
+    <script>
+        var installCompleted = false;
+
+        function log(msg) {
+            var status = document.getElementById("status");
+            status.innerHTML += msg + "<br>";
+            status.scrollTop = status.scrollHeight;
+        }
+
+        function install() {
+            try {
+                var createDesktop = document.getElementById("desktopShortcut").checked;
+                var createStartMenu = document.getElementById("startMenuShortcut").checked;
+                
+                log("starting installation (current user)...");
+                
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                var shell = new ActiveXObject("WScript.Shell");
+                
+                // current dir
+                var currentPath = window.location.pathname;
+                if (currentPath.charAt(0) === '/') currentPath = currentPath.substring(1);
+                currentPath = currentPath.replace(/\//g, "\\");
+                var currentDir = fso.GetParentFolderName(currentPath);
+                
+                // src
+                var sourceFile = fso.BuildPath(currentDir, "4gen.hta");
+                var sourceIcon = fso.BuildPath(currentDir, "assets\\4gen.ico");
+                var sourceUnicode = fso.BuildPath(currentDir, "unicode_chars.txt");
+                
+                // install dir
+                var targetDir = fso.BuildPath(shell.ExpandEnvironmentStrings("%LOCALAPPDATA%"), "4gen");
+                var targetFile = fso.BuildPath(targetDir, "4gen.hta");
+                var targetIcon = fso.BuildPath(targetDir, "4gen.ico");
+                var targetUnicode = fso.BuildPath(targetDir, "unicode_chars.txt");
+                
+                // check files/ensure dirs
+                if (!fso.FileExists(sourceFile)) {
+                    log("error: 4gen.hta not found");
+                    return;
+                }
+                if (!fso.FileExists(sourceIcon)) {
+                    log("warning: 4gen.ico not found, no icon will be set");
+                }
+                if (!fso.FileExists(sourceUnicode)) {
+                    log("warning: unicode_chars.txt not found");
+                }
+
+                if (!fso.FolderExists(targetDir)) {
+                    log("creating directory...");
+                    fso.CreateFolder(targetDir);
+                }
+                
+                // copy
+                log("copying files...");
+                fso.CopyFile(sourceFile, targetFile, true);
+                log("4gen.hta copied");
+                
+                if (fso.FileExists(sourceIcon)) {
+                    fso.CopyFile(sourceIcon, targetIcon, true);
+                    log("icon copied");
+                } else {
+                    targetIcon = "";
+                    log("no icon found");
+                }
+                
+                if (fso.FileExists(sourceUnicode)) {
+                    fso.CopyFile(sourceUnicode, targetUnicode, true);
+                    log("unicode_chars.txt copied");
+                } else {
+                    log("unicode_chars.txt not found, skipping");
+                }
+                
+                // create shortcuts if requested
+                if (createDesktop || createStartMenu) {
+                    createShortcuts(targetFile, targetIcon, shell, fso, createDesktop, createStartMenu);
+                }
+                
+                log("installation completed!");
+                log("installed to: " + targetDir);
+                
+                // grey out install and rename cancel
+                installCompleted = true;
+                document.getElementById("installBtn").disabled = true;
+                document.getElementById("cancelBtn").innerText = "close";
+                
+            } catch(e) {
+                log("error: " + e.message);
+            }
+        }
+
+        function createShortcuts(targetFile, iconFile, shell, fso, desktop, startMenu) {
+            try {
+                if (desktop) {
+                    log("creating desktop shortcut...");
+                    var desktopPath = shell.SpecialFolders("Desktop");
+                    var shortcut = fso.BuildPath(desktopPath, "4gen.lnk");
+                    
+                    var link = shell.CreateShortcut(shortcut);
+                    link.TargetPath = "mshta.exe";
+                    link.Arguments = '"' + targetFile + '"';
+                    link.WorkingDirectory = fso.GetParentFolderName(targetFile);
+                    link.Description = "4gen password generator";
+                    if (iconFile) link.IconLocation = iconFile + ",0";
+                    link.Save();
+                    log("desktop shortcut created");
+                }
+                
+                if (startMenu) {
+                    log("creating start menu shortcut...");
+                    try {
+                        var startMenuPath = fso.BuildPath(
+                            shell.ExpandEnvironmentStrings("%APPDATA%"), 
+                            "Microsoft\\Windows\\Start Menu\\Programs"
+                        );
+                        var startShortcut = fso.BuildPath(startMenuPath, "4gen.lnk");
+                        
+                        var startLink = shell.CreateShortcut(startShortcut);
+                        startLink.TargetPath = "mshta.exe";
+                        startLink.Arguments = '"' + targetFile + '"';
+                        startLink.WorkingDirectory = fso.GetParentFolderName(targetFile);
+                        startLink.Description = "4gen password generator";
+                        if (iconFile) startLink.IconLocation = iconFile + ",0";
+                        startLink.Save();
+                        
+                        log("start menu shortcut created");
+                    } catch(e) {
+                        log("start menu shortcut failed: " + e.message);
+                    }
+                }
+                
+            } catch(e) {
+                log("shortcut error: " + e.message);
+            }
+        }
+
+        window.onload = function() {
+            window.resizeTo(400, 350);
+            log("installer ready.");
+            log("select options and click install.");
+        };
+    </script>
+</body>
+</html>

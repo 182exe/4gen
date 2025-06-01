@@ -1,0 +1,30 @@
+{
+    "name": "4gen",
+    "version": "0.0.0",
+    "description": "a secure & lightweight windows hta-based password generator with cool features",
+    "main": "4gen.hta",
+    "scripts": {
+        "version": "node scripts/update-version.js && git add .",
+        "release": "npm version patch && git push --follow-tags",
+        "release:minor": "npm version minor && git push --follow-tags",
+        "release:major": "npm version major && git push --follow-tags"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/182exe/4gen.git"
+    },
+    "keywords": [
+        "password",
+        "generator",
+        "windows",
+        "hta",
+        "security",
+        "entropy"
+    ],
+    "author": "182exe",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/182exe/4gen/issues"
+    },
+    "homepage": "https://github.com/182exe/4gen#readme"
+}
