@@ -1,6 +1,6 @@
 {
     "name": "4gen",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "description": "a secure & lightweight windows hta-based password generator with cool features",
     "main": "4gen.hta",
     "scripts": {
