@@ -1,8 +1,15 @@
 const fs = require('fs');
 
-// get current version
-const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-const version = packageJson.version;
+// get version from package.json or environment (for GitHub Actions)
+let version;
+if (process.env.GITHUB_REF && process.env.GITHUB_REF.startsWith('refs/tags/v')) {
+    // extract version from git tag in GitHub Actions
+    version = process.env.GITHUB_REF.replace('refs/tags/v', '');
+} else {
+    // use package.json version for local development
+    const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+    version = packageJson.version;
+}
 
 console.log(`updating version to ${version}...`);
 

@@ -30,6 +30,9 @@ jobs:
       run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
       shell: bash
       
+    - name: update version in files
+      run: node scripts/update-version.js
+      
     - name: zip
       run: |
         mkdir 4gen-release

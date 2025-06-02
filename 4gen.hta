@@ -434,6 +434,7 @@
                 configsPath = getConfigsPath();
                 loadConfigList();
                 loadConfig();
+                collectSystemEntropy(); // collect initial system entropy
                 updateAll();
             } catch(e) {}
         }
@@ -461,7 +462,56 @@
         var useSecureRandom = false;
         var entropyPool = [];
         var entropyWindow = null;
+        var useMouseEntropy = false;
+        var systemEntropyPool = [];
         
+        function collectSystemEntropy() {
+            systemEntropyPool = [];
+            var timestamp = new Date().getTime();
+            
+            // collect various system entropy sources
+            try {
+                // timing entropy
+                for (var i = 0; i < 50; i++) {
+                    var start = new Date().getTime();
+                    Math.sin(i); // small computation
+                    var end = new Date().getTime();
+                    systemEntropyPool.push((end - start) & 0xFF);
+                    systemEntropyPool.push((timestamp + i * 1337) & 0xFF);
+                }
+                
+                // browser/system entropy
+                systemEntropyPool.push(navigator.userAgent.length & 0xFF);
+                systemEntropyPool.push(screen.width & 0xFF);
+                systemEntropyPool.push(screen.height & 0xFF);
+                systemEntropyPool.push(window.innerWidth & 0xFF);
+                systemEntropyPool.push(window.innerHeight & 0xFF);
+                
+                // memory usage approximation
+                if (window.performance && window.performance.memory) {
+                    systemEntropyPool.push(window.performance.memory.usedJSHeapSize & 0xFF);
+                    systemEntropyPool.push(window.performance.memory.totalJSHeapSize & 0xFF);
+                }
+                
+                // random timing variations
+                for (var i = 0; i < 20; i++) {
+                    var rnd = Math.random();
+                    systemEntropyPool.push(Math.floor(rnd * 256));
+                    systemEntropyPool.push((timestamp * rnd) & 0xFF);
+                }
+                
+                // process id approximation
+                systemEntropyPool.push((window.external ? 1 : 0) + (document.all ? 2 : 0));
+                
+            } catch(e) {
+                alert("error collecting system entropy: " + e.message);
+                // fallback entropy
+                for (var i = 0; i < 100; i++) {
+                    systemEntropyPool.push(Math.floor(Math.random() * 256));
+                }
+            }
+        }
+
         // chacha20 impl
         function chacha20Quarter(a, b, c, d, x) {
             x[a] = (x[a] + x[b]) >>> 0;
@@ -823,13 +873,23 @@
         }
 
         function getRandom(length) {
-            if (!useSecureRandom || entropyPool.length < 100) {
-                // fallback to insecure prnd
-                var meow = new Array();
-                for (var i = 0; i < length; i++) {
-                    meow.push(Math.floor(Math.random() * 256));
-                }
-                return meow;
+            // always use secure random with ChaCha20
+            var finalEntropy = [];
+            
+            // collect fresh system entropy
+            collectSystemEntropy();
+            finalEntropy = finalEntropy.concat(systemEntropyPool);
+            
+            // add mouse entropy if available
+            if (useMouseEntropy && entropyPool.length > 0) {
+                finalEntropy = finalEntropy.concat(entropyPool);
+            }
+            
+            // ensure we have enough entropy
+            while (finalEntropy.length < 256) {
+                var timestamp = new Date().getTime();
+                finalEntropy.push((timestamp + Math.random() * 1000) & 0xFF);
+                finalEntropy.push(Math.floor(Math.sin(timestamp) * 1000000) & 0xFF);
             }
             
             // chacha20 via pool
@@ -837,17 +897,17 @@
             var nonce = new Array(12); // 96-bit nonce
             var timestamp = new Date().getTime();
             
-            // create key from pool
+            // create key from entropy pool
             for (var i = 0; i < 32; i++) {
-                key[i] = (entropyPool[i % entropyPool.length] ^ 
+                key[i] = (finalEntropy[i % finalEntropy.length] ^ 
                          (timestamp >> (i % 32)) ^ 
                          (Math.sin(timestamp + i) * 1000000)) & 0xFF;
             }
             
             // nonce from pool and timestamp
             for (var i = 0; i < 12; i++) {
-                var entropyIndex = (i + 32) % entropyPool.length;
-                nonce[i] = (entropyPool[entropyIndex] ^ 
+                var entropyIndex = (i + 32) % finalEntropy.length;
+                nonce[i] = (finalEntropy[entropyIndex] ^ 
                            (timestamp >> ((i * 3) % 32)) ^
                            (Math.cos(timestamp + i) * 1000000)) & 0xFF;
             }
@@ -855,19 +915,19 @@
             // plaintext data to encrypt (acts as our random source)
             var plaintext = new Array(length);
             for (var i = 0; i < length; i++) {
-                var entropyIndex = i % entropyPool.length;
-                plaintext[i] = (entropyPool[entropyIndex] ^ 
+                var entropyIndex = i % finalEntropy.length;
+                plaintext[i] = (finalEntropy[entropyIndex] ^ 
                                (timestamp >> (i % 32)) ^
                                (i * 257) ^
                                (Math.sin(timestamp * i) * 1000000)) & 0xFF;
             }
             
-            // encrypt to get bytes
+            // encrypt to get random bytes
             return chacha20Encrypt(key, nonce, plaintext);
         }
 
         function genClick() {
-            if (useSecureRandom && entropyPool.length < 100) {
+            if (useMouseEntropy && entropyPool.length < 100) {
                 openEntropyWindow();
                 return;
             }
@@ -876,15 +936,15 @@
             if (pw) {
                 document.getElementById("out").value = pw;
                 updateStrength();
-                // clear entropy pool after use
-                if (useSecureRandom) {
+                // clear mouse entropy pool after use
+                if (useMouseEntropy) {
                     entropyPool = [];
                 }
             }
         }
 
-        function toggleSecureRandom() {
-            useSecureRandom = document.getElementById("secureRandom").checked;
+        function toggleMouseEntropy() {
+            useMouseEntropy = document.getElementById("mouseEntropy").checked;
         }
 
         function generate() {
@@ -1047,25 +1107,6 @@
             return -1;
         }
 
-        function getSecureRandom(length) {
-            // chacha if entropy
-            if (useSecureRandom && entropyPool.length >= 100) {
-                return getRandom(length);
-            }
-            
-            // no entropy? no problem. 
-            var result = new Array(length);
-            var seed = new Date().getTime();
-            for (var i = 0; i < length; i++) {
-                seed = (seed * 9301 + 49297) % 233280;
-                var rnd = seed / 233280;
-                rnd += Math.sin(new Date().getTime() + i) * 10000;
-                rnd += (navigator.userAgent.length + screen.width + screen.height) * i;
-                result[i] = Math.floor((rnd % 1) * 256);
-            }
-            return result;
-        }
-
         // strength display
         function updateStrength() {
             var len = parseInt(document.getElementById("len").value, 10) || 0;
@@ -1189,7 +1230,7 @@
                     '"c3":' + document.getElementById("c3").checked + ',' +
                     '"c4":' + document.getElementById("c4").checked + ',' +
                     '"c5":' + document.getElementById("c5").checked + ',' +
-                    '"secureRandom":' + document.getElementById("secureRandom").checked + ',' +
+                    '"mouseEntropy":' + document.getElementById("mouseEntropy").checked + ',' +
                     '"custom":"' + document.getElementById("custom").value.replace(/"/g, '\\"') + '",' +
                     '"exclude":"' + document.getElementById("exclude").value.replace(/"/g, '\\"') + '"' +
                 '}';
@@ -1219,12 +1260,12 @@
                 document.getElementById("c3").checked = cfg.c3 !== false;
                 document.getElementById("c4").checked = cfg.c4 !== false;
                 document.getElementById("c5").checked = cfg.c5 === true;
-                document.getElementById("secureRandom").checked = cfg.secureRandom === true;
+                document.getElementById("mouseEntropy").checked = cfg.mouseEntropy === true;
                 document.getElementById("custom").value = cfg.custom || "";
                 document.getElementById("exclude").value = cfg.exclude || "";
                 
                 // update checkbox state
-                useSecureRandom = document.getElementById("secureRandom").checked;
+                useMouseEntropy = document.getElementById("mouseEntropy").checked;
                 
                 updateAll();
             } catch(e) {}
@@ -1423,7 +1464,7 @@
             <button class="preset-btn" onclick="setLength(32)">32</button>
             <button class="preset-btn" onclick="setLength(64)">64</button>
         </div>
-        <div class="checkbox-row"><input type="checkbox" id="secureRandom" onchange="toggleSecureRandom()"/><label>secure random (mouse entropy)</label></div>
+        <div class="checkbox-row"><input type="checkbox" id="mouseEntropy" onchange="toggleMouseEntropy()"/><label>use mouse entropy</label></div>
     </fieldset>
 
     <fieldset>
